@@ -1,0 +1,160 @@
+#separator:tab
+#html:true
+What is The Twelve-Factor App methodology?	"The twelve-factor app is a methodology for building software-as-a-service
+apps that:<br><ul><li>Use declarative formats for setup automation, to minimize time and cost
+for new developers joining the project;<br></li><li>Have a clean contract with the underlying operating system, offering maximum portability between execution environments;<br></li><li>Are suitable for deployment on modern cloud platforms, obviating the
+need for servers and systems administration;<br></li><li>Minimize divergence between development and production, enabling continuous deployment for maximum agility;<br></li><li>And can scale up without significant changes to tooling, architecture, or
+development practices.<br></li></ul>"
+"What is the short definition of the <i><b>""Codebase""</b></i>&nbsp;factor?"	One codebase tracked in revision control, many deploys.
+"What is the short definition of the <b><i>""Dependencies""</i></b>&nbsp;factor?"	Explicitly declare and isolate dependencies.
+"What is the short definition of the <b><i>""Config""</i></b>&nbsp;factor?"	Store config in the environment.
+"What is the short definition of the ""<i><b>Backing services""</b></i>&nbsp;factor?"	Treat backing services as attached resources.
+"What is the short definition of the <i><b>""Build, release, run""</b></i>&nbsp;factor?"	Strictly separate build and run stages.
+"What is the short definition of the&nbsp;<i><b>""Processes""</b></i>&nbsp;factor?"	Execute the app as one or more stateless processes.
+"What is the short definition of the&nbsp;<i><b>""Port binding""</b></i>&nbsp;factor?"	Export services via port binding.
+"What is the short definition of the&nbsp;<i><b>""Concurrency""</b></i>&nbsp;factor?"	Scale out via the process model.
+"What is the short definition of the&nbsp;<i><b>""Disposability""</b></i>&nbsp;factor?"	Maximize robustness with fast startup and graceful shutdown.
+"What is the short definition of the&nbsp;<i><b>""Dev/prod parity""</b></i>&nbsp;factor?"	Keep development, staging, and production as similar as possible.
+"What is the short definition of the&nbsp;<i><b>""Logs""</b></i>&nbsp;factor?"	Treat logs as event streams.
+"What is the short definition of the&nbsp;<i><b>""Admin processes""</b></i>&nbsp;factor?"	Run admin/management tasks as one-off processes.
+What is a buildpack?	"Buildpacks are responsible for transforming deployed code into a slug, are composed of a set of scripts, and
+depending on the programming language, the scripts will retrieve dependencies,
+output generated assets or compiled code, and more. This output is assembled
+into a slug by the slug compiler."
+What is a slug?	"Slugs are compressed and pre-packaged copies of your application optimized
+for distribution to the dyno manager. When you git push to Heroku, your
+code is received by the slug compiler which transforms your repository into a
+slug. Scaling an application then downloads and expands the slug to a dyno for
+execution."
+"If you suspect that a build problem is being caused
+by an error in the build cache, what can you do?"	"I can use the heroku-builds plugin to purge/clear it:
+<pre><code>  $ heroku plugins:install heroku-builds
+  $ heroku builds:cache:purge</code>
+</pre>"
+"A _____________ fetches dependencies to store alongside
+your code."	Buildpack
+"Which of the following are non-12-factor and 12-factor
+apps in terms of the Config factor?<br><ol><li>It is not possible to make the codebase public without leaking sensitive
+values.</li><li>Environment variables are used and never committed to a codebase.</li><li>No code change is required to change config values.</li><li>Config changes require a code change, causing additional time in testing,
+etc.</li><li>Config vars are granular controls, never grouped together as named groups.</li><li>You may need to hunt through various files to change your config values.</li><li>Batches config into named groups - brittle, does not scale cleanly.</li></ol>"	<ol><li>It is not possible to make the codebase public without leaking sensitive values.&nbsp;⛔</li><li>Environment variables are used and never committed to a codebase.&nbsp;✅</li><li>No code change is required to change config values.&nbsp;✅</li><li>Config changes require a code change, causing additional time in testing, etc. ⛔</li><li>Config vars are granular controls, never grouped together as named groups. ✅</li><li>You may need to hunt through various files to change your config values. ⛔</li><li>Batches config into named groups - brittle, does not scale cleanly. ⛔</li></ol>
+What are Heroku buttons?	"Heroku Buttons are pointers to source code repositories that have been extended with a tiny file that determines how the code should be deployed and
+configured. Clicking a Heroku Button
+will initiate deployment of the app, provide an option to configure the app, and
+deliver the running app on the web."
+Heroku add-on providers can be found in the _____________________.	Heroku Elements Marketplace
+Code can be promoted easily between various environments within a Heroku ______________.	Pipeline
+Environmental variables should be set as _____________ on Heroku.	Config vars
+"Using a lightweight backing service in the local environment, while a more serious and robust backing
+service in production. In terms of Dev/Prod parity
+factor, is this a twelve factor app?"	No
+"When you git push to Heroku, your code is received
+by the slug compiler which transforms your repository into an executable bundle known as a ___________.
+During this build stage, the slug compiler uses a _____________ to transform the application gather all
+dependencies, and compile the source to binaries, if
+applicable."	<ol><li>Slug</li><li>Buildpack</li></ol>
+What does the release stage consist of?	"<img src=""release-phase.png""><br>Since the build stage is completely separate, the config differences (between
+environments) can be combined with the built slug into a release that is ready
+for immediate execution."
+What tasks can you perform in the customized release phase?	"<ul><li>Sending CSS, JS, and other assets from your app’s slug to a CDN or S3
+bucket.<br></li><li>Priming or invalidating cache stores.<br></li><li>Running database schema migrations.<br></li></ul>"
+"What does your app’s ”Procfile” look like when specifying the tasks to be executed during the release
+phase?"	"<pre><code>  release: python manage.py migrate
+  web: gunicorn myproject.wsgi --log-file -</code>
+</pre>
+"
+"The release process type runs in a ___________ dyno
+whenever a new release is created, unless the release
+is caused by changes to an ___________ config vars."	<ol><li>One-off</li><li>Add-on's</li></ol>
+What are the events that lead to a new release?	"<ul><li>A successful app build<br></li><li>A change to the value of a config var (unless the config var is associated
+with an add-on)<br></li><li>A pipeline promotion<br></li><li>A rollback<br></li><li>A release via the platform API<br></li><li>Provisioning a new add-on<br></li></ul>"
+"What does a Heroku app’s web process type consist
+of?"	"It’s the only process type that can receive external HTTP traffic from Heroku’s
+routers. If your app includes a web server, you should declare it as your app’s
+web process."
+"You scale your dynos vertically by _____________, and
+horizontally by _______________."	<ol><li>Upgrading to larger dynos<br></li><li>Adding more dynos<br></li></ol>
+"What is the difference between Common Runtime
+and Private and Shield Spaces in terms of port binding?"	"In both, web processes can receive web requests by listening on the port
+number specified in the <code>$PORT</code> environment variable.
+<br>However, in Private and Shield Spaces any process in a dyno can choose to listen on a port number of choice and receive connections from other dynos on the private network. This is supported for web, worker and one-off processes."
+"Heroku’s config vars offer a simple way to adjust
+your concurrency. You can set ________________ as a
+config var. In this way, you can increase your app’s
+web concurrency, without making any actual code
+changes."	<code>WEB_CONCURRENCY</code>
+"On Heroku, a web process has ____ seconds to bind to
+its assigned $PORT, or ____ seconds if using the Java
+buildpack, Gradle buildpack, heroku-deploy toolbelt
+plugin, or Heroku Maven plugin, else a R10 Boot
+Timeout error is emitted."	<ol><li>60</li><li>90</li></ol>
+Graceful shutdown of processes occurs when they receive a _________ signal.	SIGTERM
+"The application processes have 30 seconds to shut
+down cleanly. If any processes remain after that time
+period, the dyno manager will terminate them forcefully with a _________ signal."	SIGKILL
+"The different process types and the commands to
+start them at startup for your Heroku app are specified in ______________."	The Procfile
+"You are rewriting an app to support the 12-factor
+methodology and deploying it to Heroku. The app
+currently makes use of sticky sessions. What should
+you use instead of sticky sessions?"	Heroku Redis and Memcached
+"What does a 12-factor application involve in terms
+of Logs?"	"<ul><li>Logs are collected from the output streams of all running processes and
+backing services.<br></li><li>It does not concern itself with routing or storage of its output stream.<br></li><li>It should not attempt to write to, or manage logfiles.<br></li><li>Processes should write all logs, unbuffered, to stdout as a stream.<br></li></ul>"
+What command can you use to tail your app’s logs?	"By adding the tail option to the logs command:<br>
+<code>
+  $ heroku logs --app name-of-your-app --tail
+</code>"
+"How can you have the free Papertrail plan logging
+add-on attached via the CLI?"	"By adding the add-on to your app:<br>
+<code>
+$ heroku addons:create papertrail:choklad --app name-of-your-app
+</code>"
+How do you open your logging add-on if using Papertrail via the CLI?	<code>$ heroku addons:open papertrail --app name-of-your-app</code>
+How do you filter logs in the CLI?	"<pre><code>  $ heroku logs --source app
+  $ heroku logs --dyno router
+  $ heroku logs --source app --dyno web</code>
+</pre>
+"
+"True or false? <br>Admin processes such as running database migrations, arbitrary
+code in a REPL session, and one-time scripts should
+be run in an identical environment, using the same
+code, config and dependency isolation, as the foreground processes."	True
+"On Heroku, the admin processes can be provisioned
+via __________ dynos, which are identical in code and
+config to all your app’s other dynos."	One-off
+What is the difference between web dynos and one-off dynos?	"While the web dyno would be defined in the Procfile and managed by the
+platform, the console and script would only be executed when needed. These
+are one-off dynos."
+"How do you determine the default dyno type used in
+one-off dynos?"	"The default dyno type used in one-off dynos is determined as follows:<br><ul><li>Apps using the free or hobby dyno types will use the corresponding free or
+hobby dyno type in the one-off dyno. Other dyno types are not available.<br></li><li>Apps using standard or performance dyno types will use a standard-1x
+dyno type in the one-off dyno. Apps using these dyno types can specify
+a different dyno type for one-off dynos by using the size argument. For
+example, <code>heroku run --size=standard-2x rake heavy:job</code>.<br></li></ul>"
+How do your start a one-off dyno via the CLI?	"One-off dynos are created using <code>heroku run</code>. To see one-off dynos in action,
+execute the bash command, available in all applications deployed to Heroku: <code>heroku run bash --app name-of-your-app</code>."
+How do you stop a one-off dyno?	"Connections to one-off dynos will be closed after one hour of inactivity (in
+both input and output). When the connection is closed, the dyno will be sent
+<code>SIGHUP</code>. This idle timeout helps prevent unintended charges from leaving interactive console sessions open and unused. You can also stop your dyno at any time with the <code>exit</code> command."
+"How do you run one-off dynos in the background via
+the CLI?"	You can run a dyno in the background using <code>heroku run:detached</code>. Unlike <code>heroku run</code>, these dynos will send their output to your logs instead of your console window. Detached dynos have no connection, so they have no timeout. However, like all dynos, one-off dynos are cycled every 24 hours. As a result, a one-off dyno will run for a maximum of 24 hours.
+"What are the three differences between one-off dynos
+(run with <code>heroku run</code>) and formation dynos (run
+with <code>heroku ps:scale</code>)?"	"<ul><li>One-off dynos run attached to your terminal, with a character-by-character
+TCP connection for STDIN and STDOUT. This allows you to use interactive processes like a console. Since STDOUT is going to your terminal,
+the only thing recorded in the app’s logs is the startup and shutdown of
+the dyno. (If you run a detached one-off dyno, it does output to your
+logs).<br></li><li>One-off dynos terminate as soon as you press Ctrl+C or otherwise disconnect in your local terminal. One-off dynos never automatically restart,
+whether the process ends on its own or whether you manually disconnect.<br></li><li>One-off dynos are named in the scheme <code>run.N</code> rather than the scheme <code>&lt;process-type&gt;.N</code>.<br></li></ul>"
+"When you are using Shield Private Spaces, you must
+first add an SSH key to your user account, before
+creating one-off dynos. What command do you use
+for that?"	This only has to be done once with <code>heroku keys:add</code>.
+"While one-off dynos are a great fit for administrative
+tasks, sometimes you need to debug a service on a
+production dyno. Unlike one-off dynos, ________________makes an SSH connection directly to an existing dyno
+(e.g., web.2)."	Heroku Exec
+Private Space Logging centralizes all logs from within all apps within a ___________________.	Shield Private Space
+How many log lines are retained by Logplex?	Up to 1,500 lines
+"What allows you to run scheduled jobs via one-off
+dynos?"	Heroku Scheduler
